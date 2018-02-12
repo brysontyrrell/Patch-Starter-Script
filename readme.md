@@ -6,6 +6,8 @@ your own patch definitions to host on a patch server for Jamf Pro 10.2+.
 
 ## Basic Usage
 
+### Help Text
+
 You can view the help text for the script by passing the `-h` or `--help`
 argument:
 
@@ -35,6 +37,8 @@ optional arguments:
                         Provide publisher name for a full definition
   --patch-only          Only create a patch, not a full definition
 ```
+
+### Create a Patch Definition
 
 To create a patch definition, pass the path to the application to the script and
 it will print the resulting JSON:
@@ -117,6 +121,8 @@ patch definition to a JSON file:
 /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" -o .
 ```
 
+### Create the Patch Data Only
+
 If you only want the patch itself and not the full definition (this is the data
 inside the `patches` array), pass the `--patch-only` argument:
 
@@ -174,4 +180,19 @@ This option also works with writing out to a file:
 
 ```bash
 /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" --patch-only -o .
+```
+
+## Working with Patch Server
+
+You can quickly create new software titles in the [Patch Server](https://github.com/brysontyrrell/PatchServer) project by piping
+the output from `patchstarter.py` into a `curl` command:
+
+```bash
+$ curl -X POST http://localhost:5000/api/v1/title -d "$(/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" -H 'Content-Type: application/json'
+```
+
+You can do the same for POSTing a new version:
+
+```bash
+$ curl -X POST http://localhost:5000/api/v1/title/GitHubDesktop/version -d "{\"items\": [$(/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)]}" -H 'Content-Type: application/json'
 ```
