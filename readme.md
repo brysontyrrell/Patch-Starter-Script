@@ -127,7 +127,7 @@ If you only want the patch itself and not the full definition (this is the data
 inside the `patches` array), pass the `--patch-only` argument:
 
 ```bash
-$ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" --patch-only
+$ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
 ```
 
 ```json
@@ -179,7 +179,7 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" 
 This option also works with writing out to a file:
 
 ```bash
-/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" --patch-only -o .
+/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only -o .
 ```
 
 ## Working with Patch Server
