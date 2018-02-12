@@ -53,7 +53,7 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github"
     "currentVersion": "223", 
     "requirements": [
         {
-            "operator": "like", 
+            "operator": "is", 
             "and": true, 
             "type": "recon", 
             "name": "Application Bundle ID", 
@@ -79,7 +79,7 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github"
                     "name": "GitHub Desktop", 
                     "criteria": [
                         {
-                            "operator": "like", 
+                            "operator": "is", 
                             "and": true, 
                             "type": "recon", 
                             "name": "Application Bundle ID", 
@@ -146,7 +146,7 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
             "name": "GitHub Desktop", 
             "criteria": [
                 {
-                    "operator": "like", 
+                    "operator": "is", 
                     "and": true, 
                     "type": "recon", 
                     "name": "Application Bundle ID", 
