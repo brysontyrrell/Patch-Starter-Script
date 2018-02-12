@@ -89,7 +89,7 @@ def make_definition(args):
                 "criteria": [
                     {
                         "name": "Application Bundle ID",
-                        "operator": "like",
+                        "operator": "is",
                         "value": app_bundle_id,
                         "type": "recon",
                         "and": True
@@ -128,7 +128,7 @@ def make_definition(args):
         "requirements": [
             {
                 "name": "Application Bundle ID",
-                "operator": "like",
+                "operator": "is",
                 "value": app_bundle_id,
                 "type": "recon",
                 "and": True
