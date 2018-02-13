@@ -56,14 +56,14 @@ def main():
 
 
 def make_definition(args):
-    app_filename = os.path.basename(args.path)
+    app_filename = os.path.basename(args.path.rstrip('/'))
     app_path = os.path.join(args.path, 'Contents')
 
     info_plist = plistlib.readPlist(os.path.join(app_path, 'Info.plist'))
 
     app_name = info_plist['CFBundleName']
     app_id = app_name.replace(' ', '')
-    app_version = info_plist['CFBundleVersion']
+    app_version = info_plist['CFBundleShortVersionString']
     app_bundle_id = info_plist['CFBundleIdentifier']
     app_min_os = info_plist['LSMinimumSystemVersion']
     app_last_modified = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
