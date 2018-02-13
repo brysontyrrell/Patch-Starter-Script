@@ -19,7 +19,7 @@ A script to create a basic patch definition from an existing macOS application.
 This script makes the following assumptions about the software:
     * The "name" is derived from "CFBundleName"
     * The "id" is the "name" without spaces
-    * The "version" is determined by "CFBundelVersion"
+    * The "version" is determined by "CFBundleShortVersionString"
     * Minimum OS version is determined by "LSMinimumSystemVersion"
     * The "releaseDate" is determined by the last modified timestamp
       of the application bundle
@@ -49,68 +49,68 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github"
 
 ```json
 {
-    "publisher": "Github", 
-    "currentVersion": "223", 
+    "id": "GitHubDesktop",
+    "name": "GitHub Desktop",
+    "publisher": "GitHub",
+    "appName": "GitHub Desktop.app",
+    "bundleId": "com.github.GitHub",
+    "lastModified": "2018-02-13T02:55:53Z",
+    "currentVersion": "Hasty Things Done Hastily",
     "requirements": [
         {
-            "operator": "is", 
-            "and": true, 
-            "type": "recon", 
-            "name": "Application Bundle ID", 
-            "value": "com.github.GitHub"
+            "name": "Application Bundle ID",
+            "operator": "is",
+            "value": "com.github.GitHub",
+            "type": "recon",
+            "and": true
         }
-    ], 
-    "name": "GitHub Desktop", 
-    "appName": "GitHub Desktop.app", 
-    "lastModified": "2018-02-12T18:33:02Z", 
+    ],
     "patches": [
         {
-            "releaseDate": "2017-05-22T20:24:33Z", 
+            "version": "Hasty Things Done Hastily",
+            "releaseDate": "2017-05-22T20:24:33Z",
+            "standalone": true,
+            "minimumOperatingSystem": "10.9",
+            "reboot": false,
             "killApps": [
                 {
-                    "appName": "GitHub Desktop.app", 
-                    "bundleId": "com.github.GitHub"
+                    "bundleId": "com.github.GitHub",
+                    "appName": "GitHub Desktop.app"
                 }
-            ], 
-            "version": "223", 
+            ],
             "components": [
                 {
-                    "version": "223", 
-                    "name": "GitHub Desktop", 
+                    "name": "GitHub Desktop",
+                    "version": "Hasty Things Done Hastily",
                     "criteria": [
                         {
-                            "operator": "is", 
-                            "and": true, 
-                            "type": "recon", 
-                            "name": "Application Bundle ID", 
-                            "value": "com.github.GitHub"
-                        }, 
+                            "name": "Application Bundle ID",
+                            "operator": "is",
+                            "value": "com.github.GitHub",
+                            "type": "recon",
+                            "and": true
+                        },
                         {
-                            "operator": "is", 
-                            "type": "recon", 
-                            "name": "Application Version", 
-                            "value": "223"
+                            "name": "Application Version",
+                            "operator": "is",
+                            "value": "Hasty Things Done Hastily",
+                            "type": "recon"
                         }
                     ]
                 }
-            ], 
-            "standalone": true, 
-            "minimumOperatingSystem": "10.9", 
-            "dependencies": [], 
-            "reboot": false, 
+            ],
             "capabilities": [
                 {
-                    "operator": "greater than or equal", 
-                    "type": "recon", 
-                    "name": "Operating System Version", 
-                    "value": "10.9"
+                    "name": "Operating System Version",
+                    "operator": "greater than or equal",
+                    "value": "10.9",
+                    "type": "recon"
                 }
-            ]
+            ],
+            "dependencies": []
         }
-    ], 
-    "extensionAttributes": [], 
-    "id": "GitHubDesktop", 
-    "bundleId": "com.github.GitHub"
+    ],
+    "extensionAttributes": []
 }
 ```
 
@@ -132,47 +132,47 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
 
 ```json
 {
-    "releaseDate": "2017-05-22T20:24:33Z", 
+    "version": "Hasty Things Done Hastily",
+    "releaseDate": "2017-05-22T20:24:33Z",
+    "standalone": true,
+    "minimumOperatingSystem": "10.9",
+    "reboot": false,
     "killApps": [
         {
-            "appName": "GitHub Desktop.app", 
-            "bundleId": "com.github.GitHub"
+            "bundleId": "com.github.GitHub",
+            "appName": "GitHub Desktop.app"
         }
-    ], 
-    "version": "223", 
+    ],
     "components": [
         {
-            "version": "223", 
-            "name": "GitHub Desktop", 
+            "name": "GitHub Desktop",
+            "version": "Hasty Things Done Hastily",
             "criteria": [
                 {
-                    "operator": "is", 
-                    "and": true, 
-                    "type": "recon", 
-                    "name": "Application Bundle ID", 
-                    "value": "com.github.GitHub"
-                }, 
+                    "name": "Application Bundle ID",
+                    "operator": "is",
+                    "value": "com.github.GitHub",
+                    "type": "recon",
+                    "and": true
+                },
                 {
-                    "operator": "is", 
-                    "type": "recon", 
-                    "name": "Application Version", 
-                    "value": "223"
+                    "name": "Application Version",
+                    "operator": "is",
+                    "value": "Hasty Things Done Hastily",
+                    "type": "recon"
                 }
             ]
         }
-    ], 
-    "standalone": true, 
-    "minimumOperatingSystem": "10.9", 
-    "dependencies": [], 
-    "reboot": false, 
+    ],
     "capabilities": [
         {
-            "operator": "greater than or equal", 
-            "type": "recon", 
-            "name": "Operating System Version", 
-            "value": "10.9"
+            "name": "Operating System Version",
+            "operator": "greater than or equal",
+            "value": "10.9",
+            "type": "recon"
         }
-    ]
+    ],
+    "dependencies": []
 }
 ```
 
