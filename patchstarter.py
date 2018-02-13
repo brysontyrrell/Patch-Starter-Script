@@ -1,9 +1,17 @@
-#!/usr/bin/python
 import argparse
+import base64
 from datetime import datetime
 import json
 import os
 import plistlib
+import subprocess
+import xml
+
+try:
+    # Python 2 and 3 compatibility
+    input = raw_input
+except NameError:
+    pass
 
 
 def arguments():
@@ -27,11 +35,24 @@ def arguments():
 
     parser.add_argument('path', help='Path to the application', type=str)
     parser.add_argument(
-        '-o', '--output', help='Directory path to write JSON file', type=str)
+        '-o', '--output',
+        help='Directory path to write JSON file',
+        type=str,
+        metavar='output_dir'
+    )
     parser.add_argument(
         '-p', '--publisher',
         help='Provide publisher name for a full definition',
-        type=str, default=''
+        type=str,
+        default='',
+        metavar='publisher_name'
+    )
+    parser.add_argument(
+        '-e', '--extension-attribute',
+        help='Path to a script to include as an extension attribute\n* You can '
+             'include multiple extension attribute arguments',
+        action='append',
+        metavar='ext_att_path'
     )
     parser.add_argument(
         '--patch-only', help='Only create a patch, not a full definition',
@@ -56,17 +77,56 @@ def main():
         print(json.dumps(output, indent=4))
 
 
+def read_binary_plist(plist_path):
+    process = subprocess.Popen(
+        ['plutil', '-convert', 'json', '-o', '-', plist_path],
+        stdout=subprocess.PIPE
+    )
+    response = process.communicate()
+    try:
+        return json.loads(response[0])
+    except ValueError:
+        print('ERROR: Unable to read the application plist!')
+        raise SystemExit(1)
+
+
 def make_definition(args):
     app_filename = os.path.basename(args.path.rstrip('/'))
-    app_path = os.path.join(args.path, 'Contents')
+    info_plist_path = os.path.join(args.path, 'Contents', 'Info.plist')
 
-    info_plist = plistlib.readPlist(os.path.join(app_path, 'Info.plist'))
+    try:
+        info_plist = plistlib.readPlist(info_plist_path)
+    except EnvironmentError as err:
+        print('ERROR: {}'.format(err))
+        raise SystemExit(1)
+    except xml.parsers.expat.ExpatError:
+        info_plist = read_binary_plist(info_plist_path)
 
-    app_name = info_plist['CFBundleName']
+    try:
+        app_name = info_plist['CFBundleName']
+    except KeyError:
+        app_name = str(app_filename.split('.app')[0])
+
     app_id = app_name.replace(' ', '')
-    app_version = info_plist['CFBundleShortVersionString']
     app_bundle_id = info_plist['CFBundleIdentifier']
-    app_min_os = info_plist['LSMinimumSystemVersion']
+
+    try:
+        app_version = info_plist['CFBundleShortVersionString']
+    except KeyError:
+        print("Could not find 'CFBundleShortVersionString', pleave provide a "
+              "value for the application version")
+        app_version = input("[]: ") or None
+        if not app_version:
+            print('ERROR: The application version is required')
+            raise SystemExit(1)
+
+    try:
+        app_min_os = info_plist['LSMinimumSystemVersion']
+    except KeyError:
+        print("Could not find 'LSMinimumSystemVersion', pleave provide a value "
+              "for the minimum OS version")
+        app_min_os = input("[10.9]: ") or '10.9'
+
     app_last_modified = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
     app_timestamp = datetime.utcfromtimestamp(
         os.path.getmtime(args.path)).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -140,6 +200,24 @@ def make_definition(args):
     }
 
     patch_def['patches'].append(patch)
+
+    if args.extension_attribute:
+        for ext_att in args.extension_attribute:
+            try:
+                with open(ext_att, 'rb') as f:
+                    ext_att_content = base64.b64encode(f.read())
+            except IOError as err:
+                print('ERROR: {}'.format(err))
+                raise SystemExit(1)
+            else:
+                patch_def['extensionAttributes'].append(
+                    {
+                        "key": app_name.lower().replace(' ', '-'),
+                        "value": ext_att_content.decode('ascii'),
+                        "displayName": app_name
+                    }
+                )
+
     return app_id, patch_def
 
 

@@ -12,8 +12,10 @@ You can view the help text for the script by passing the `-h` or `--help`
 argument:
 
 ```bash
-$ /usr/bin/python patchstarter.py -h
-usage: patchstarter.py [-h] [-o OUTPUT] [-p PUBLISHER] [--patch-only] path
+$ python patchstarter.py -h
+usage: patchstarter.py [-h] [-o output_dir] [-p publisher_name]
+                       [-e ext_att_path] [--patch-only]
+                       path
 
 A script to create a basic patch definition from an existing macOS application.
 This script makes the following assumptions about the software:
@@ -31,10 +33,13 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -o OUTPUT, --output OUTPUT
+  -o output_dir, --output output_dir
                         Directory path to write JSON file
-  -p PUBLISHER, --publisher PUBLISHER
+  -p publisher_name, --publisher publisher_name
                         Provide publisher name for a full definition
+  -e ext_att_path, --extension-attribute ext_att_path
+                        Path to a script to include as an extension attribute
+                        * You can include multiple extension attribute arguments
   --patch-only          Only create a patch, not a full definition
 ```
 
@@ -44,7 +49,7 @@ To create a patch definition, pass the path to the application to the script and
 it will print the resulting JSON:
 
 ```bash
-$ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github"
+$ python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github"
 ```
 
 ```json
@@ -118,8 +123,36 @@ Pass a path to a directory using the `-o` or `--output` argument to write a the
 patch definition to a JSON file:
 
 ```bash
-/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" -o .
+$ python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" -o .
 ```
+
+You can bundle an extension attribute into your patch definition by passing the
+path to the file tp the `-e` of `--extension-attribute` argument:
+
+```bash
+$ python patchstarter.py /Applications/GitHub\ Desktop.app -p "Github" -e ext_att.sh
+```
+
+You can use the `-e` argument multiple time. Each passed extension attribute
+will appended to the `extensionAttributes` key:
+
+```json
+{
+    "...",
+    "extensionAttributes": [
+        {
+            "key": "github-desktop",
+            "value": "IyEvYmluL2Jhc2gKCm91dHB1dFZlcnNpb249Ik5vdCBJbnN0YWxsZWQiCgppZiBbIC1kIC9BcHBsaWNhdGlvbnMvR2l0SHViXCBEZXNrdG9wLmFwcCBdOyB0aGVuCiAgICBvdXRwdXRWZXJzaW9uPSQoZGVmYXVsdHMgcmVhZCAvQXBwbGljYXRpb25zL0dpdEh1YlwgRGVza3RvcC5hcHAvQ29udGVudHMvSW5mby5wbGlzdCBDRkJ1bmRsZVNob3J0VmVyc2lvblN0cmluZykKZmkKCmVjaG8gIjxyZXN1bHQ+JG91dHB1dFZlcnNpb248L3Jlc3VsdD4iCg==",
+            "displayName": "GitHub Desktop"
+        }
+    ]
+}
+```
+
+This will NOT add the extension attribute to your `requirements` or
+`components/criteria`. You will need to manually update the definition to
+reference your extension attributes (using the `key` for the criterion's `name`
+value.)
 
 ### Create the Patch Data Only
 
@@ -127,7 +160,7 @@ If you only want the patch itself and not the full definition (this is the data
 inside the `patches` array), pass the `--patch-only` argument:
 
 ```bash
-$ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
+$ python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
 ```
 
 ```json
@@ -179,7 +212,7 @@ $ /usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only
 This option also works with writing out to a file:
 
 ```bash
-/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only -o .
+$ python patchstarter.py /Applications/GitHub\ Desktop.app --patch-only -o .
 ```
 
 ## Working with Patch Server
@@ -188,11 +221,11 @@ You can quickly create new software titles in the [Patch Server](https://github.
 the output from `patchstarter.py` into a `curl` command:
 
 ```bash
-$ curl -X POST http://localhost:5000/api/v1/title -d "$(/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" -H 'Content-Type: application/json'
+$ curl -X POST http://localhost:5000/api/v1/title -d "$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" -H 'Content-Type: application/json'
 ```
 
 You can do the same for POSTing a new version:
 
 ```bash
-$ curl -X POST http://localhost:5000/api/v1/title/GitHubDesktop/version -d "{\"items\": [$(/usr/bin/python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)]}" -H 'Content-Type: application/json'
+$ curl -X POST http://localhost:5000/api/v1/title/GitHubDesktop/version -d "{\"items\": [$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)]}" -H 'Content-Type: application/json'
 ```
