@@ -221,7 +221,7 @@ You can quickly create new software titles in the [Patch Server](https://github.
 the output from `patchstarter.py` into a `curl` command:
 
 ```bash
-$ curl -X POST http://localhost:5000/api/v1/title -d "$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" -H 'Content-Type: application/json'
+$ curl -X POST http://localhost:5000/api/v1/title -d "$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" )" -H 'Content-Type: application/json'
 ```
 
 You can do the same for POSTing a new version:
