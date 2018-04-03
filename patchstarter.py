@@ -181,7 +181,7 @@ def make_definition(args):
     patch_def = {
         "id": app_id,
         "name": app_name,
-        "publisher": args.publisher if args.publisher else app_name,
+        "publisher": args.publisher or app_name,
         "appName": app_filename,
         "bundleId": app_bundle_id,
         "lastModified": app_last_modified,
