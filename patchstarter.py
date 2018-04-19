@@ -38,21 +38,28 @@ def arguments():
         '-o', '--output',
         help='Directory path to write JSON file',
         type=str,
-        metavar='output_dir'
+        metavar='<output_dir>'
     )
     parser.add_argument(
         '-p', '--publisher',
         help='Provide publisher name for a full definition',
         type=str,
         default='',
-        metavar='publisher_name'
+        metavar='<publisher_name>'
+    )
+    parser.add_argument(
+        '-n', '--name',
+        help='Provide the display name for a full definition',
+        type=str,
+        default='',
+        metavar='<name>'
     )
     parser.add_argument(
         '-e', '--extension-attribute',
         help='Path to a script to include as an extension attribute\n* You can '
              'include multiple extension attribute arguments',
         action='append',
-        metavar='ext_att_path'
+        metavar='<ext_att_path>'
     )
     parser.add_argument(
         '--patch-only', help='Only create a patch, not a full definition',
@@ -102,10 +109,13 @@ def make_definition(args):
     except xml.parsers.expat.ExpatError:
         info_plist = read_binary_plist(info_plist_path)
 
-    try:
-        app_name = info_plist['CFBundleName']
-    except KeyError:
-        app_name = str(app_filename.split('.app')[0])
+    if args.name:
+        app_name = args.name
+    else:
+        try:
+            app_name = info_plist['CFBundleName']
+        except KeyError:
+            app_name = str(app_filename.split('.app')[0])
 
     app_id = app_name.replace(' ', '')
     app_bundle_id = info_plist['CFBundleIdentifier']
