@@ -13,8 +13,8 @@ argument:
 
 ```bash
 $ python patchstarter.py -h
-usage: patchstarter.py [-h] [-o output_dir] [-p publisher_name]
-                       [-e ext_att_path] [--patch-only]
+usage: patchstarter.py [-h] [-o <output_dir>] [-p <publisher_name>]
+                       [-n <name>] [-e <ext_att_path>] [--patch-only]
                        path
 
 A script to create a basic patch definition from an existing macOS application.
@@ -33,11 +33,13 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -o output_dir, --output output_dir
+  -o <output_dir>, --output <output_dir>
                         Directory path to write JSON file
-  -p publisher_name, --publisher publisher_name
+  -p <publisher_name>, --publisher <publisher_name>
                         Provide publisher name for a full definition
-  -e ext_att_path, --extension-attribute ext_att_path
+  -n <name>, --name <name>
+                        Provide the display name for a full definition
+  -e <ext_att_path>, --extension-attribute <ext_att_path>
                         Path to a script to include as an extension attribute
                         * You can include multiple extension attribute arguments
   --patch-only          Only create a patch, not a full definition
