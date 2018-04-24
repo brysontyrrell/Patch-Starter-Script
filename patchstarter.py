@@ -29,7 +29,13 @@ def arguments():
                     'modified timestamp\n      of the application bundle\n'
                     '    * Because the "publisher" cannot be reliably derived '
                     'from Info.plist\n      it is left blank unless passed as '
-                    'an argument',
+                    'an argument\n\nA word of warning when using the '
+                    '"--app-version" argument: Jamf Pro\'s \n"Application '
+                    'Version" criteria matches against '
+                    '"CFBundleShortVersionString".\nThe intent of this '
+                    'argument is to make it easier to create version updates\n'
+                    'for releases of an app other than what is present on your '
+                    'system.',
         formatter_class=argparse.RawTextHelpFormatter
     )
 
@@ -60,6 +66,22 @@ def arguments():
              'include multiple extension attribute arguments',
         action='append',
         metavar='<ext_att_path>'
+    )
+    parser.add_argument(
+        '--app-version',
+        help='Provide the version of the app (override '
+             'CFBundleShortVersionString)',
+        type=str,
+        default='',
+        metavar='<version>'
+    )
+    parser.add_argument(
+        '--min-sys-version',
+        help='Provide the minimum supported version fo macOS for this app '
+             '(e.g. 10.9)',
+        type=str,
+        default='',
+        metavar='<version>'
     )
     parser.add_argument(
         '--patch-only', help='Only create a patch, not a full definition',
@@ -120,22 +142,28 @@ def make_definition(args):
     app_id = app_name.replace(' ', '')
     app_bundle_id = info_plist['CFBundleIdentifier']
 
-    try:
-        app_version = info_plist['CFBundleShortVersionString']
-    except KeyError:
-        print("Could not find 'CFBundleShortVersionString', pleave provide a "
-              "value for the application version")
-        app_version = input("[]: ") or None
-        if not app_version:
-            print('ERROR: The application version is required')
-            raise SystemExit(1)
+    if args.app_version:
+        app_version = args.app_version
+    else:
+        try:
+            app_version = info_plist['CFBundleShortVersionString']
+        except KeyError:
+            print("Could not find 'CFBundleShortVersionString', please provide "
+                  "a value for the application version")
+            app_version = input("[]: ") or None
+            if not app_version:
+                print('ERROR: The application version is required')
+                raise SystemExit(1)
 
-    try:
-        app_min_os = info_plist['LSMinimumSystemVersion']
-    except KeyError:
-        print("Could not find 'LSMinimumSystemVersion', pleave provide a value "
-              "for the minimum OS version")
-        app_min_os = input("[10.9]: ") or '10.9'
+    if args.min_sys_version:
+        app_min_os = args.min_sys_version
+    else:
+        try:
+            app_min_os = info_plist['LSMinimumSystemVersion']
+        except KeyError:
+            print("Could not find 'LSMinimumSystemVersion', please provide a "
+                  "value for the minimum OS version")
+            app_min_os = input("[10.9]: ") or '10.9'
 
     app_last_modified = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
     app_timestamp = datetime.utcfromtimestamp(

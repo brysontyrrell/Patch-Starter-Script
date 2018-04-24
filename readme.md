@@ -11,10 +11,12 @@ your own patch definitions to host on a patch server for Jamf Pro 10.2+.
 You can view the help text for the script by passing the `-h` or `--help`
 argument:
 
-```bash
+```text
 $ python patchstarter.py -h
 usage: patchstarter.py [-h] [-o <output_dir>] [-p <publisher_name>]
-                       [-n <name>] [-e <ext_att_path>] [--patch-only]
+                       [-n <name>] [-e <ext_att_path>]
+                       [--app-version <version>] [--min-sys-version <version>]
+                       [--patch-only]
                        path
 
 A script to create a basic patch definition from an existing macOS application.
@@ -27,6 +29,11 @@ This script makes the following assumptions about the software:
       of the application bundle
     * Because the "publisher" cannot be reliably derived from Info.plist
       it is left blank unless passed as an argument
+
+A word of warning when using the "--app-version" argument: Jamf Pro's 
+"Application Version" criteria matches against "CFBundleShortVersionString".
+The intent of this argument is to make it easier to create version updates
+for releases of an app other than what is present on your system.
 
 positional arguments:
   path                  Path to the application
@@ -42,6 +49,10 @@ optional arguments:
   -e <ext_att_path>, --extension-attribute <ext_att_path>
                         Path to a script to include as an extension attribute
                         * You can include multiple extension attribute arguments
+  --app-version <version>
+                        Provide the version of the app (override CFBundleShortVersionString)
+  --min-sys-version <version>
+                        Provide the minimum supported version fo macOS for this app (e.g. 10.9)
   --patch-only          Only create a patch, not a full definition
 ```
 
